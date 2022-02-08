@@ -87,11 +87,10 @@ class Game {
       .load(function() {
         
         game.initializeScreens();
-        game.screens["map"].loadMap("Kibatsuna_Desert", 7, 6);
         game.main_character = game.makeCharacter("black_bear");
-        game.screens["map"].placeCharacter(game.main_character, 5500, 5500);
-        game.screens["map"].followCharacter(game.main_character);
+
         game.popScreens("title", "map");
+        game.screens["map"].loadMap("Kibatsuna_Desert");
     });
   }
 

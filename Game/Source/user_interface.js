@@ -213,24 +213,13 @@ Game.prototype.initializeScreens = function() {
   this.addScreen("map", new MapScreen());
   this.addScreen("title", new TitleScreen());
 
-  // this.makeScreen("zoo");
-  // this.makeScreen("cafe");
-  // this.makeScreen("gift_shop");
-  // this.makeScreen("animal_pop");
-
-  // this.black = PIXI.Sprite.from(PIXI.Texture.WHITE);
-  // this.black.width = this.width;
-  // this.black.height = this.height;
-  // this.black.tint = 0x000000;
+  this.black = PIXI.Sprite.from(PIXI.Texture.WHITE);
+  this.black.width = this.width;
+  this.black.height = this.height;
+  this.black.tint = 0x000000;
 
   this.screens[first_screen].position.x = 0;
   this.current_screen = this.screens[first_screen];
-
-  // this.alertMask = new PIXI.Container();
-  // pixi.stage.addChild(this.alertMask);
-  // this.alertBox = new PIXI.Container();
-  // pixi.stage.addChild(this.alertBox);
-  // this.initializeAlertBox();
 }
 
 
@@ -262,16 +251,42 @@ Game.prototype.popScreens = function(old_screen, new_screen) {
 }
 
 
-
 Game.prototype.clearScreen = function(screen) {
   console.log("clearing " + screen.name)
-  while(screen.children[0]) {
-    let x = screen.removeChild(screen.children[0]);
+  while(this.screens[screen].children[0]) {
+    let x = this.screens[screen].removeChild(this.screens[screen].children[0]);
     x.destroy();
   }
 }
 
 
+Game.prototype.fadeToBlack = function(time_to_fade) {
+  pixi.stage.addChild(this.black);
+  this.black.alpha = 0.01;
+  var tween = new TWEEN.Tween(this.black)
+    .to({alpha: 1})
+    .duration(time_to_fade)
+    .onComplete(function() {
+    })
+    .start();
+}
+
+
+Game.prototype.fadeFromBlack = function(time_to_fade) {
+  var tween = new TWEEN.Tween(this.black)
+    .to({alpha: 0})
+    .duration(time_to_fade)
+    .onComplete(function() {
+      pixi.stage.removeChild(this.black);
+    })
+    .start();
+}
+
+
+
+///-------
+///
+///
 Game.prototype.switchScreens = function(old_screen, new_screen) {
   var self = this;
 
@@ -313,27 +328,27 @@ Game.prototype.makeLoadingScreen = function() {
 }
 
 
-Game.prototype.fadeToBlack = function(time_to_fade) {
-  pixi.stage.addChild(this.black);
-  this.black.alpha = 0.01;
-  var tween = new TWEEN.Tween(this.black)
-    .to({alpha: 1})
-    .duration(time_to_fade)
-    .onComplete(function() {
-    })
-    .start();
-}
+// Game.prototype.fadeToBlack = function(time_to_fade) {
+//   pixi.stage.addChild(this.black);
+//   this.black.alpha = 0.01;
+//   var tween = new TWEEN.Tween(this.black)
+//     .to({alpha: 1})
+//     .duration(time_to_fade)
+//     .onComplete(function() {
+//     })
+//     .start();
+// }
 
 
-Game.prototype.fadeFromBlack = function(time_to_fade) {
-  var tween = new TWEEN.Tween(this.black)
-    .to({alpha: 0})
-    .duration(time_to_fade)
-    .onComplete(function() {
-      pixi.stage.removeChild(this.black);
-    })
-    .start();
-}
+// Game.prototype.fadeFromBlack = function(time_to_fade) {
+//   var tween = new TWEEN.Tween(this.black)
+//     .to({alpha: 0})
+//     .duration(time_to_fade)
+//     .onComplete(function() {
+//       pixi.stage.removeChild(this.black);
+//     })
+//     .start();
+// }
 
 
 Game.prototype.fadeScreens = function(old_screen, new_screen, double_fade = false) {
