@@ -120,7 +120,24 @@ MapScreen.prototype.update = function() {
   }
   
   if (this.follow_character != null) {
-    this.position.set(game.width/2 - this.follow_character.x * this.scale.x, game.height/2 - this.follow_character.y * this.scale.y);
+    let x = Math.max(
+              game.width / 2, 
+              Math.min(
+                this.follow_character.x * this.scale.x,
+                this.map_data.dimensions.w * 1000 - game.width / 2
+              )
+            );
+    let y = Math.max(
+              game.height / 2,
+              Math.min(
+                this.follow_character.y * this.scale.y,
+                this.map_data.dimensions.h * 1000 - game.height / 2
+                )
+            );
+    this.position.set(game.width / 2 - x, game.height / 2 - y);
+    if (this.map_data.dimensions.h == 1 && this.map_data.dimensions.w == 1) {
+      this.position.set(game.width / 2 - 500, 0);
+    }  
   }
 
   if (this.map_data != null && this.map_data.warps != null) {
