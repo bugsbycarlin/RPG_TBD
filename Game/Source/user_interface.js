@@ -210,7 +210,7 @@ Game.prototype.initializeScreens = function() {
   var self = this;
   this.screens = [];
 
-  this.addScreen("map", new MapScreen());
+  this.addScreen("map_edit", new MapEditScreen());
   this.addScreen("title", new TitleScreen());
 
   this.black = PIXI.Sprite.from(PIXI.Texture.WHITE);

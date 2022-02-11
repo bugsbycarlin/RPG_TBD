@@ -89,8 +89,8 @@ class Game {
         game.initializeScreens();
         game.main_character = game.makeCharacter("black_bear");
 
-        game.popScreens("title", "map");
-        game.screens["map"].loadMap("Kibatsuna_Desert");
+        game.popScreens("title", "map_edit");
+        game.screens["map_edit"].loadMap("Kibatsuna_Desert");
     });
   }
 
