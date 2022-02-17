@@ -6,16 +6,20 @@
 // Written by Matthew Carlin
 //
 
+
 class MapEditScreen extends MapScreen {
   constructor() {
     super();
 
     let self = this;
-    document.addEventListener("click", function(ev) {self.handleClick(ev)}, false);
+    document.getElementById("mainDiv").addEventListener("click", function(ev) {self.handleClick(ev)}, false);
   }
 
   initializeScreen() {
     super.initializeScreen();
+
+    this.walkable_area_layer = makeContainer(this.world_layer);
+
     this.edit_mode = "Add";
 
     this.edit_mode_text = new PIXI.Text("Mode: Add", {fontFamily: default_font, fontSize: 40, fill: 0x000000, letterSpacing: 8, align: "left"});
@@ -23,23 +27,80 @@ class MapEditScreen extends MapScreen {
     this.edit_mode_text.position.set(30, 30);
     this.info_layer.addChild(this.edit_mode_text);
 
+    this.resetCurrentPolygon();
+  };
+
+
+  resetCurrentPolygon() {
+    if (this.current_polygon != null) {
+      this.stuff_layer.removeChild(this.current_polygon);
+    }
+
     this.current_polygon = new PIXI.Graphics();
     this.current_polygon.point_list = [];
     this.current_polygon.status = "open";
     this.stuff_layer.addChild(this.current_polygon);
-  };
+  }
 
 
   handleClick(ev) {
-    console.log("Screen: " + ev.clientX + "," + ev.clientY);
-    
-    let map_x = Math.round(ev.clientX - this.world_layer.x);
-    let map_y = Math.round(ev.clientY - this.world_layer.y);
+    console.log(ev);
+    let pixel_scale = document.getElementById("mainDiv").offsetHeight / game.height;
+
+    let click_x = ev.offsetX;
+    let click_y = ev.offsetY;
+    let map_x = Math.round(click_x / pixel_scale - this.world_layer.x);
+    let map_y = Math.round(click_y / pixel_scale - this.world_layer.y);
     console.log("Map:" + map_x + "," + map_y);
 
-    if (this.edit_mode == "Add") {
+    if (this.edit_mode === "Add") {
       this.current_polygon.point_list.push([map_x, map_y]);
       this.updateCurrentPolygon();
+    }
+  }
+
+
+  handleKeyDown(key, metakey) {
+    super.handleKeyDown(key);
+
+    if (this.edit_mode === "Add") {
+      if (key === "Enter") {
+        this.addCurrentPolygonToWalkableArea();
+      }
+
+      if (key.toLowerCase() === "s" && metakey === true) {
+        console.log("here Saving");
+
+        window.saveMap(this.name, this.map_data);
+      }
+    }
+  }
+
+
+  addCurrentPolygonToWalkableArea() {
+    let pg = this.current_polygon;
+
+    this.map_data.walkable_area.push(pg.point_list);
+
+    this.resetCurrentPolygon();
+
+    this.updateWalkableArea();
+  }
+
+
+  updateWalkableArea() {
+    this.walkable_area_layer.removeChildren();
+
+    for (let i = 0; i < this.map_data.walkable_area.length; i++) {
+      let area_polygon = this.map_data.walkable_area[i];
+
+      let area = new PIXI.Graphics();
+      area.beginFill(0xffffff);
+      area.drawPolygon(area_polygon.flat());
+      area.endFill();
+      area.alpha = 0.2;
+
+      this.walkable_area_layer.addChild(area);
     }
   }
 

@@ -151,7 +151,7 @@ class Game {
     let last_frame = 0;
     let last_performance_update = 0;
     let pixi_draw_count = 0;
-    let performance_debugging = true;
+    let performance_debugging = false;
 
     // // count the number of drawings
     // // https://stackoverflow.com/questions/63294038/pixi-js-how-do-i-get-draw-count
@@ -243,7 +243,7 @@ class Game {
     this.keymap[ev.key] = true;
 
     if (this.current_screen != null) {
-      this.current_screen.handleKeyDown(ev.key);
+      this.current_screen.handleKeyDown(ev.key, ev.metaKey);
     }
   }
 

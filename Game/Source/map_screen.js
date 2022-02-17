@@ -22,12 +22,16 @@ class MapScreen extends PIXI.Container {
     this.map_layer = makeContainer(this.world_layer);
     this.stuff_layer = makeContainer(this.world_layer);
     this.info_layer = makeContainer(this);
+
+    this.edit_mode = null;
   };
 
 
   loadMap(name, start = 1) {
 
     let map = this;
+
+    this.name = name;
 
     let fade_out = 0;
     if (this.map_data != null) {
@@ -69,6 +73,10 @@ class MapScreen extends PIXI.Container {
         map.placeCharacter(game.main_character, map.map_data.starts[start].x, map.map_data.starts[start].y);
         map.followCharacter(game.main_character);
 
+        if (map.updateWalkableArea != null) {
+          map.updateWalkableArea();
+        }
+
         map.mode = "walk";
 
         pixi.stage.addChild(game.black);
@@ -94,6 +102,35 @@ class MapScreen extends PIXI.Container {
 
 
   handleKeyDown(key) {
+  }
+
+
+  testMove(x, y, direction, step_distance) {
+
+    let angle = 0;
+    if (direction === "right") angle = 0;
+    if (direction === "left") angle = 180;
+    if (direction === "up") angle = 90;
+    if (direction === "down") angle = 270;
+    if (direction === "downright") angle = 315;
+    if (direction === "downleft") angle = 225;
+    if (direction === "upleft") angle = 135;
+    if (direction === "upright") angle = 45;
+
+    let step_x = x + (40 + step_distance) * Math.cos(angle * 180 / Math.PI);
+    let step_y = y - (40 + step_distance) * Math.sin(angle * 180 / Math.PI);
+
+    let legal = false;
+
+    for (let i = 0; i < this.map_data.walkable_area.length; i++) {
+      let area_polygon = this.map_data.walkable_area[i];
+
+      if (pointInsidePolygon([step_x, step_y], area_polygon)) {
+        legal = true;
+      }
+    }
+
+    return legal;
   }
 
 
@@ -125,7 +162,13 @@ class MapScreen extends PIXI.Container {
     }
 
     if (character.direction != null) {
-      character.move();
+      if (this.map_data.walkable_area.length > 0) {
+        if (this.testMove(character.x, character.y, character.direction, character.walk_speed)) {
+          character.move();
+        }
+      } else {
+        character.move();
+      }
     }
     
     if (this.follow_character != null) {

@@ -6,7 +6,5 @@
   "warps": {
     "1": {"x":970,"y":725, "map": "Shorton", "start": "3"}
   },
-  "walkable_area": {
-    
-  }
+  "walkable_area": []
 }

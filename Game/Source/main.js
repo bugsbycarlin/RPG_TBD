@@ -10,7 +10,8 @@
 
 // Modules to control application life and create native browser window
 const { app, ipcMain, BrowserWindow } = require('electron')
-const path = require('path')
+const path = require('path');
+const fs = require('fs');
 const settings = require('electron-settings');
 
 
@@ -27,8 +28,9 @@ function createWindow () {
 
     const mainWindow = new BrowserWindow({
       width: 1440,
-      height: 922,
+      height: 900,
       fullscreen: fullscreen,
+      useContentSize: true,
       backgroundColor: '#000000',
       show: false,
       webPreferences: {
@@ -64,8 +66,26 @@ function createWindow () {
             data: false
         });
         event.returnValue = 'game is windowed.'
-      } else if (arg[0] == "getfullscreen") {
+      } else if (arg[0] == "get_fullscreen") {
         event.returnValue = mainWindow.isFullScreen();
+      } else if (arg[0] == "save_map") {
+        console.log("saving");
+        let map_name = arg[1];
+        let map_data = arg[2];
+
+        let filename = "./Maps/" + map_name + "/map.json";
+        let content = JSON.stringify(map_data, null, " ");
+
+        fs.writeFile(filename, content, (err) => {
+            if(err){
+              console.log("Map saving at " + filename + " errored: "+ err.message)
+              event.returnValue = false;
+            }
+                        
+            console.log("Map saved to " + filename);
+            event.returnValue = true;
+        });
+        console.log("okay, okay, okay");
       }
     });
   });

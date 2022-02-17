@@ -14,5 +14,9 @@ window.gameFullScreen = function(game_fullscreen) {
 }
 
 window.gameIsFullScreen = function(game_fullscreen) {
-  return ipcRenderer.sendSync('synchronous-message', ["getfullscreen"]);
+  return ipcRenderer.sendSync('synchronous-message', ["get_fullscreen"]);
+}
+
+window.saveMap = function(map_name, map_data) {
+  ipcRenderer.sendSync('synchronous-message', ["save_map", map_name, map_data]);
 }
